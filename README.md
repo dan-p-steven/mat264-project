@@ -1,5 +1,4 @@
-# mat264-project
-Repo for the MAT264 Group Project
+# Repo for the MAT264 Group Project
 
 A.6 Robot Arm Calligraphy
 A planar robot arm with two rigid segments of lengths l1 and l2 can move in the plane
