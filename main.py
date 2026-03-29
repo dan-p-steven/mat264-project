@@ -38,14 +38,20 @@ class InverseKinematics:
 
         return J
 
-    def forward_k(self, t1, t2):
+    def forward_k(self, theta: np.ndarray) -> np.ndarray:
         """
-        input angles t1 and t2
-        return x and y coordinates of the end effector
+        Compute the forward kinematics of the robot arm given theta.
+
+        Input:
+            theta: 1x2 vector,      the angles of the joints of the robot
+        Returns:
+            p: 1x2 vector,          the end position (x,y) of the tip of robot
         """
+        t1, t2 = theta
+
         x = self.l1 * np.cos(t1) + self.l2 * np.cos(t1 + t2)
         y = self.l1 * np.sin(t1) + self.l2 * np.sin(t1 + t2)
-        return x, y
+        return np.array([x, y])
 
     def inverse_k(self, x, y, t1, t2) -> tuple(float, float):
         """
