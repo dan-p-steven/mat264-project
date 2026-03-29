@@ -1,7 +1,7 @@
 import numpy as np
 TOLERANCE = 0.00001
 
-class InverseKinematics:
+class RobotArm:
 
     def __init__(self, l1, l2):
         self.l1 = l1
