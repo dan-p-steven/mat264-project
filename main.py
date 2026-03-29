@@ -1,5 +1,5 @@
 import numpy as np
-TOLERENCE = 0.00001
+TOLERANCE = 0.00001
 
 class InverseKinematics:
 
@@ -7,18 +7,6 @@ class InverseKinematics:
         self.l1 = l1
         self.l2 = l2
 
-    # for jacobian
-    def _dx_dt1(self, t1, t2):
-        return -self.l1 * np.sin(t1) - self.l2 * np.sin(t1 + t2)
-    
-    def _dx_dt2(self, t1, t2):
-        return -self.l2 * np.sin(t1 + t2)
-    
-    def _dy_dt1(self, t1, t2):
-        return self.l1 * np.cos(t1) + self.l2 * np.cos(t1 + t2)
-    
-    def _dy_dt2(self, t1, t2):
-        return self.l2 * np.cos(t1 + t2)
 
     def jacobian(self, theta: np.ndarray) -> np.ndarray:
         """
@@ -53,32 +41,42 @@ class InverseKinematics:
         y = self.l1 * np.sin(t1) + self.l2 * np.sin(t1 + t2)
         return np.array([x, y])
 
-    def inverse_k(self, x, y, t1, t2) -> tuple(float, float):
+
+    def inverse_k(self, target: np.ndarray, guess: np.ndarray) -> np.ndarray:
         """
-        input x and y coordinates of the end effector, initial guess of t1 and t2
-        return angles t1 and t2
+        Solve the inverse kinematics of the robot arm using Newtons Method. Start
+        with a target position (x,y) and initial guess theta (t1, t2). Then using
+        Newton's method, find candidate positions (x,y) until they are within the
+        tolerance TOLERANCE.
+        
+        Input:
+            target: 1x2 vector,     position vector you want to find theta for
+            guess: 1x2,             initial guess of angles theta
+
+        Returns:
+            theta: 1x2,             theta angles (t1, t2) that generate target
+                                    position within tolerance
         """
-        X_orig = np.array([x, y])
 
-        t_new = np.array([t1, t2])
-        x_n, y_n = self.forward_k(t_new[0], t_new[1])
-        X_new = np.array([x_n, y_n])
+        # Initial guess of angles theta.
+        theta = guess.astype(float)
 
-        while np.linalg.norm(X_new - X_orig) > TOLERENCE: # use 2-norm
+        # Get our (x,y) from initial theta then difference the target.
+        # This is our F function, for which we will find the roots.
+        F = self.forward_k(theta) - target
 
-            # t1_n, t2_n
-            t = t_new
-            # x_n, y_n
-            F_n = X_new
-            # pseudo inverse jacobian
-            J = np.array([[self._dx_dt1(t[0], t[1]), self._dx_dt2(t[0], t[1])], [self._dy_dt1(t[0], t[1]), self._dy_dt2(t[0], t[1])]])
+        # Check if our guess is close enough to target, "closeness" in this 
+        # context is 2D norm, or euclidean distance.
+        while np.linalg.norm(F) > TOLERANCE:
+
+            # Compute Jacobian pesudo-inverse for our guess.
+            J = self.jacobian(theta)
             J_pinv = np.linalg.pinv(J)
 
-            # update t1_n, t2_n
-            t_new = t - np.linalg.matmul(J_pinv, F_n)
-            # update x_n, y_n
-            x_n, y_n = self.forward_k(t_new[0], t_new[1])
-            X_new = np.array([x_n, y_n])
-        return t_new[0], t_new[1]
+            # Update theta according to Newton Method in 2D.
+            theta = theta - (J_pinv @ F)
 
-        
+            # Recompute the error.
+            F = self.forward_k(theta) - target
+
+        return theta
