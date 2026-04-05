@@ -5,6 +5,8 @@ import matplotlib.animation as animation
 from robot_arm import RobotArm
 from pen import dynamic_bezier_interpolation, dynamic_spline_interpolation, dynamic_linear_interpolation, dynamic_piece_polynomial_interpolation
 
+animation_filename = 'thank_you.mp4'
+plot_title = 'Thank You'
 # --- 1. PRE-COMPUTATION PHASE ---
 # Setup the arm parameters
 l1 = 6.0
@@ -14,7 +16,7 @@ arm = RobotArm(l1, l2)
 # Generate targets using our optimized Bezier approximation
 # (Positioned at x=-6, y=3 to fit nicely in the arm's reach)
 print("Generating target coordinates...")
-target_x, target_y = dynamic_spline_interpolation("Thank you!", start_x=-3, start_y=1, scale=2.5, density=10.0)
+target_x, target_y = dynamic_spline_interpolation("Thank You!", start_x=-4, start_y=1, scale=2.5, density=10.0)
 num_frames = len(target_x)
 
 theta1_array = []
@@ -53,13 +55,13 @@ print("Calculations complete! Launching animation...")
 fig, ax = plt.subplots(figsize=(8, 8))
 
 # Set limits based on max reach (l1 + l2 = 9.0)
-ax.set_xlim(-8, 8)
-ax.set_ylim(-0, 6)
+ax.set_xlim(-12, 12)
+ax.set_ylim(-3, 6)
 ax.set_aspect('equal')
 ax.grid(True, linestyle='--', alpha=0.6)
-ax.set_title("Robot Arm Writing Simulation - MAT 264")
+ax.set_title(plot_title)
 
-ax.plot(target_x, target_y, color='lightgray', lw=3, label='Target Path (Desired)')
+#$ax.plot(target_x, target_y, color='lightgray', lw=3, label='Target Path (Desired)')
 
 # Initialize visual elements
 arm_line, = ax.plot([], [], 'o-', lw=5, markersize=8, color='#2c3e50', label='Robot Arm')
@@ -111,5 +113,5 @@ ani = animation.FuncAnimation(
 
 # Save the animation as an MP4 for PowerPoint
 print("Saving animation to MP4... (This might take a minute)")
-ani.save('thank_you_spline.mp4', writer='ffmpeg', fps=30, dpi=200)
+ani.save(animation_filename, writer='ffmpeg', fps=30, dpi=200)
 print("Save complete!")

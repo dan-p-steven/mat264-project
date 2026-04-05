@@ -413,7 +413,7 @@ def _generate_dense_points(text, interp_func, start_x=0, start_y=0, scale=1.0, d
 
 scale = 4.0
 density = 64.0
-w = 16
+w = 8
 h = 8
 #
 #
@@ -427,13 +427,14 @@ h = 8
 #    plt.grid(True, linestyle='--', alpha=0.5)
 #    plt.savefig('dynamic_piecewise_polynomial_mat264_rocks.png')
 #
-x_bez, y_bez = dynamic_bezier_interpolation("MAT264 Rocks!", scale=scale, density=density)
+#x_bez, y_bez = dynamic_bezier_interpolation("MAT264 Rocks!", scale=scale, density=density)
+x_vert, y_vert = dynamic_piece_polynomial_interpolation("R", scale=scale, density=density)
 plt.figure(figsize=(w, h))
-plt.title("Bezier Approximation", fontsize=14)
-plt.scatter(x_bez, y_bez, color='black', s=4, alpha=0.8)
+plt.title("Piecewise Polynomial Interpolation", fontsize=14)
+plt.scatter(x_vert, y_vert, color='magenta', s=24, alpha=0.8)
 plt.axis('equal')
 plt.grid(True, linestyle='--', alpha=0.5)
-plt.savefig('dynamic_bezier_mat264_rocks.png')
+plt.savefig('poly_r.png')
 #
 #    x_spl, y_spl = generate_dense_points("MAT264 Rocks!", dynamic_spline_interp, scale=scale, density=density)
 #    plt.figure(figsize=(w, h))
